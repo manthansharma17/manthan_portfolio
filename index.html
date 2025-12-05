@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Manthan Sharma — Portfolio</title>
+  <link rel="icon" href="/static/favicon.ico" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Feather icons -->
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+  <!-- Three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
+  <!-- Initialize EmailJS with your public key (safe to call here) -->
+  <script> (function(){ try{ emailjs.init("yj4QI4a925VyUpe1t"); }catch(e){} })(); </script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- 3D canvases (background & overlay) -->
+  <canvas id="bg-canvas" class="bg-canvas"></canvas>
+  <canvas id="overlay-canvas" class="front-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <header class="fixed w-full top-0 z-40">
+    <nav class="glass backdrop-blur-md border-b border-white/6 py-3">
+      <div class="container flex items-center justify-between">
+        <a href="#" class="text-xl font-bold flex items-center gap-2">
+          <span class="text-blue-400">Manthan</span><span class="hidden sm:inline"> Sharma</span>
+        </a>
+
+        <div class="hidden md:flex items-center gap-8 text-sm">
+          <a href="#about" class="nav-link">About</a>
+          <a href="#projects" class="nav-link">Projects</a>
+          <a href="#youtube" class="nav-link">YouTube</a>
+          <a href="#contact" class="nav-link">Contact</a>
+        </div>
+
+        <div class="md:hidden">
+          <button id="mobile-toggle" aria-expanded="false" class="p-2 rounded-md glass" aria-label="Open menu">
+            <i data-feather="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- mobile menu -->
+      <div id="mobile-menu" class="hidden md:hidden container mt-3">
+        <div class="flex flex-col gap-3 glass p-3 rounded-lg">
+          <a href="#about" class="px-2 py-2">About</a>
+          <a href="#projects" class="px-2 py-2">Projects</a>
+          <a href="#youtube" class="px-2 py-2">YouTube</a>
+          <a href="#contact" class="px-2 py-2">Contact</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="relative pt-24">
+
+    <!-- HERO -->
+    <section class="min-h-screen flex items-center">
+      <div class="container text-center relative z-10">
+        <h1 class="hero-title text-5xl md:text-7xl text-white mb-4">Manthan Sharma</h1>
+        <p class="hero-sub text-lg md:text-2xl mb-8">MCA Student • Web Developer • Content Creator</p>
+        <div class="flex justify-center gap-4">
+          <a href="#projects" class="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 shadow-lg">My Work</a>
+          <a href="#contact" class="px-6 py-3 rounded-lg glass border border-white/6">Contact</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="py-20">
+      <div class="container grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
+        <div class="md:col-span-1 flex justify-center">
+          <div class="w-64 h-64 rounded-full overflow-hidden border-2 border-white/6 glass flex items-center justify-center">
+            <img src="https://image2url.com/images/1764278096773-0f1652b8-4804-439b-aebd-63b65d48498e.jpg" alt="Manthan" class="w-full h-full object-cover">
+          </div>
+        </div>
+
+        <div class="md:col-span-2 space-y-4">
+          <h2 class="text-3xl font-bold">About Me</h2>
+          <p class="text-lg text-gray-200">Hi, I’m <strong>Manthan Sharma</strong>, an MCA 3rd-year student at IIPS, DAVV. I love building interactive web experiences, designing neat UI, and making videos that teach and inspire. I focus on full-stack projects, modern JS stacks and computer graphics using Three.js.</p>
+          <p class="text-lg text-gray-200">I enjoy experimenting with visuals and animation — I blend development and design to craft polished, usable interfaces.</p>
+
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="px-3 py-1 rounded-full glass text-sm">JavaScript</span>
+            <span class="px-3 py-1 rounded-full glass text-sm">Three.js</span>
+            <span class="px-3 py-1 rounded-full glass text-sm">React</span>
+            <span class="px-3 py-1 rounded-full glass text-sm">Node.js</span>
+            <span class="px-3 py-1 rounded-full glass text-sm">GSAP</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="py-20">
+      <div class="container">
+        <h2 class="text-3xl font-bold text-center mb-8">My Projects</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Project 1: Internal playlists (Gnomio removed) -->
+          <article class="card bg-gray-800 glass rounded-xl p-6 flex flex-col">
+            <div class="h-40 overflow-hidden rounded-md mb-4 bg-black/30 flex items-center justify-center">
+              <img src="https://image2url.com/images/1764279401331-86f60283-9b0f-446c-b1e8-e09ef5b0b7e4.png" alt="Project" class="object-cover w-full h-full">
+            </div>
+            <h3 class="font-semibold text-xl">Internal 1 </h3>
+            <p class="text-sm text-gray-300 my-3">Playlists with full solutions and walkthroughs for internal 1 questions.</p>
+
+            <div class="mt-auto space-y-2">
+              <a class="inline-flex items-center gap-2 text-blue-400" href="https://www.youtube.com/playlist?list=PLmUy2S1_SNSFQ4oB_GBX0_ZkRud8OEvOM" target="_blank" rel="noopener noreferrer">
+                Internal 1 →
+              </a>
+            </div>
+          </article>
+
+          <!-- Project 2 -->
+          <article class="card bg-gray-800 glass rounded-xl p-6">
+            <div class="h-40 overflow-hidden rounded-md mb-4 bg-black/30 flex items-center justify-center">
+              <img src="https://image2url.com/images/1764279180817-ac802c89-69b4-4c03-bcd7-9e21cce3e6bb.png" alt="Assignment" class="object-cover w-full h-full">
+            </div>
+            <h3 class="font-semibold text-xl">Assignment Videos</h3>
+            <p class="text-sm text-gray-300 my-3">Data Science Assignment full explanation.</p>
+            <a class="text-blue-400" href="https://youtube.com/playlist?list=PLmUy2S1_SNSHmmsEQoKNQeqJosjmOrQ9b&si=OZqTxu5M7B-wJBNk" target="_blank" rel="noopener noreferrer">Playlist →</a>
+          </article>
+
+          <!-- Project 3: Internal playlists -->
+          <article class="card bg-gray-800 glass rounded-xl p-6 flex flex-col">
+            <div class="h-40 overflow-hidden rounded-md mb-4 bg-black/30 flex items-center justify-center">
+              <img src="https://image2url.com/images/1764279401331-86f60283-9b0f-446c-b1e8-e09ef5b0b7e4.png" alt="Project" class="object-cover w-full h-full">
+            </div>
+            <h3 class="font-semibold text-xl">Internal 2 </h3>
+            <p class="text-sm text-gray-300 my-3">Playlists with full solutions and walkthroughs for internal 2 questions.</p>
+
+            <div class="mt-auto space-y-2">
+              <a class="inline-flex items-center gap-2 text-blue-400" href="https://youtube.com/playlist?list=PLmUy2S1_SNSF4Yy0tFCJQ9vvnSRSWj8nw&si=c_1JgtbG7HVeNprU" target="_blank" rel="noopener noreferrer">
+                Internal 2 →
+              </a>
+            </div>
+          </article>
+
+          </div>
+      </div>
+    </section>
+
+
+    <!-- YOUTUBE -->
+    <section id="youtube" class="py-20 bg-gray-900/30">
+      <div class="container">
+        <h2 class="text-3xl font-bold text-center mb-8">My YouTube Videos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-gray-800 glass rounded-xl overflow-hidden">
+            <div class="aspect-w-16 aspect-h-9">
+              <iframe src="https://www.youtube.com/embed/B8eSVmIRg1I?mute=1" class="w-full h-full" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="p-4">
+              <h3 class="font-semibold">Data Science Assignment</h3>
+              <p class="text-sm text-gray-300">Data Science internal problem walkthrough</p>
+            </div>
+          </div>
+
+          <div class="bg-gray-800 glass rounded-xl overflow-hidden">
+            <div class="aspect-w-16 aspect-h-9">
+              <iframe src="https://www.youtube.com/embed/nGTBBlgRnDc?mute=1" class="w-full h-full" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="p-4">
+              <h3 class="font-semibold">Data Science Internal</h3>
+              <p class="text-sm text-gray-300">Internal questions solved</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-8">
+          <a class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-red-600" href="https://youtube.com/@manthansharma-y5x?si=-Dp9twKW_sTU7aF9" target="_blank" rel="noopener noreferrer">
+            Visit My Channel <i data-feather="youtube" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="py-20">
+      <div class="container">
+        <h2 class="text-3xl font-bold text-center mb-8">Get In Touch</h2>
+        <div class="max-w-3xl mx-auto glass rounded-xl p-8">
+          <form id="contact-form" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input id="name" name="from_name" type="text" placeholder="Name" class="px-4 py-3 rounded-md bg-transparent border border-white/6 w-full" required>
+              <input id="email" name="from_email" type="email" placeholder="Email" class="px-4 py-3 rounded-md bg-transparent border border-white/6 w-full" required>
+            </div>
+
+            <div>
+              <input id="phone" name="phone" type="text" placeholder="Phone (optional)" class="px-4 py-3 rounded-md bg-transparent border border-white/6 w-full">
+            </div>
+
+            <input id="subject" name="subject" type="text" placeholder="Subject" class="px-4 py-3 rounded-md bg-transparent border border-white/6 w-full">
+            <textarea id="message" name="message" rows="5" placeholder="Message" class="px-4 py-3 rounded-md bg-transparent border border-white/6 w-full" required></textarea>
+            <div class="text-right">
+              <button type="submit" class="px-6 py-2 rounded-md bg-blue-600">Send Message</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="py-8 mt-8 glass border-t border-white/6">
+    <div class="container flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <h3 class="font-bold text-lg"><span class="text-blue-400">Manthan</span> Sharma</h3>
+        <p class="text-sm text-gray-300">MCA Student | Web Developer | Content Creator</p>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/manthansharma17" class="p-2 rounded-full glass" aria-label="GitHub"><i data-feather="github"></i></a>
+        <a href="https://www.linkedin.com/in/manthan-sharma-236976347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" class="p-2 rounded-full glass" aria-label="LinkedIn"><i data-feather="linkedin"></i></a>
+        <a href="https://x.com/Manthn_sharma" class="p-2 rounded-full glass" aria-label="Twitter"><i data-feather="twitter"></i></a>
+        <a href="https://youtube.com/@manthansharma-y5x?si=-Dp9twKW_sTU7aF9" target="_blank" class="p-2 rounded-full glass" aria-label="YouTube"><i data-feather="youtube"></i></a>
+      </div>
+
+      <div class="text-sm text-gray-400">
+        <div>📧 <a href="mailto:manthanclicks@gmail.com" class="text-blue-300">manthanclicks10@gmail.com</a></div>
+        <div>📞 <a href="tel:+919179358406" class="text-blue-300">+91 9179358406</a></div>
+        <div class="mt-1">&copy; <span id="year"></span> Manthan Sharma. All rights reserved.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script defer src="app.js"></script>
+</body>
+</html>
