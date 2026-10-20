@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070b1b">
+<title>Year Defender — Jan to Dec</title>
+<style>
+:root{color-scheme:dark;--bg:#070b1b;--panel:#111832;--cyan:#67f7ff;--pink:#ff5ca8;--gold:#ffd166;--muted:#91a0c8}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#1a2850 0,#0a1027 45%,var(--bg) 100%);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:#f4f7ff;display:flex;align-items:center;justify-content:center;padding:22px}
+.wrap{width:min(100%,1000px)}header{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:16px;flex-wrap:wrap}.eyebrow{color:var(--cyan);font-size:.72rem;letter-spacing:.22em;font-weight:800}.title{font-size:clamp(2rem,5vw,3.7rem);line-height:.95;letter-spacing:-.06em;margin:.35rem 0}.title span{color:var(--cyan);text-shadow:0 0 24px #67f7ff55}.sub{color:var(--muted);margin:.65rem 0 0;font-size:.95rem}.hud{display:flex;gap:9px;flex-wrap:wrap}.stat{min-width:88px;padding:10px 13px;border:1px solid #ffffff18;background:#111832b8;border-radius:12px}.stat small{display:block;color:var(--muted);font-size:.65rem;letter-spacing:.12em}.stat strong{font-size:1.15rem}.game-shell{position:relative;border:1px solid #67f7ff40;border-radius:18px;overflow:hidden;background:#050916;box-shadow:0 22px 80px #0008,0 0 45px #67f7ff0d}canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;touch-action:none}.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;background:#050916c9;backdrop-filter:blur(7px)}.overlay.hidden{display:none}.modal{max-width:440px}.modal h2{font-size:clamp(1.6rem,4vw,2.5rem);margin:0 0 10px;letter-spacing:-.04em}.modal p{color:#b8c5e9;line-height:1.6;margin:0 0 20px}.btn{border:0;border-radius:999px;background:var(--cyan);color:#06101e;padding:12px 23px;font-weight:900;cursor:pointer;box-shadow:0 0 25px #67f7ff2a}.btn:hover{transform:translateY(-1px);filter:brightness(1.08)}.hintbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.8rem;padding:13px 4px}.hintbar b{color:#eaf8ff}.mobile-controls{display:none;justify-content:space-between;gap:12px;margin-top:12px;user-select:none}.pad{display:flex;gap:8px}.control{width:56px;height:48px;border-radius:13px;border:1px solid #67f7ff45;background:#111832;color:#e9fbff;font-size:1.2rem;font-weight:800;touch-action:none}.control.fire{width:88px;background:#ff5ca81c;border-color:#ff5ca86b;color:#ff9ac7;font-size:.78rem;letter-spacing:.08em}@media(max-width:650px){body{padding:14px}.hud{width:100%}.stat{flex:1;min-width:0}.mobile-controls{display:flex}.hintbar{font-size:.72rem}.sub{font-size:.83rem}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+<div><div class="eyebrow">ARCADE SYSTEM // 2026</div><h1 class="title">YEAR <span>DEFENDER</span></h1><p class="sub">One ship. Twelve months. Clear the calendar from JAN to DEC.</p></div>
+<div class="hud"><div class="stat"><small>SCORE</small><strong id="score">0000</strong></div><div class="stat"><small>MONTH</small><strong id="month">JAN</strong></div><div class="stat"><small>HULL</small><strong id="lives">♥ ♥ ♥</strong></div></div>
+</header>
+<section class="game-shell" aria-label="Year Defender space shooter game">
+<canvas id="game" width="960" height="540" aria-label="Use arrow keys or A and D to move, space to shoot"></canvas>
+<div class="overlay" id="overlay"><div class="modal"><div class="eyebrow">MISSION BRIEFING</div><h2 id="overlayTitle">Defend the year.</h2><p id="overlayText">Shoot each month target in order, from January through December. Dodge the falling data meteors and make it to DEC.</p><button class="btn" id="start">LAUNCH MISSION ↗</button></div></div>
+</section>
+<div class="hintbar"><span><b>MOVE</b> ← → or A / D</span><span><b>SHOOT</b> SPACE</span><span><b>PAUSE</b> P</span><span>Mobile? Use the controls below.</span></div>
+<div class="mobile-controls"><div class="pad"><button class="control" data-key="left" aria-label="Move left">←</button><button class="control" data-key="right" aria-label="Move right">→</button></div><button class="control fire" data-key="fire">FIRE ✦</button></div>
+</main>
+<script>
+(() => {
+const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d');
+const scoreEl=document.querySelector('#score'),monthEl=document.querySelector('#month'),livesEl=document.querySelector('#lives');
+const overlay=document.querySelector('#overlay'),overlayTitle=document.querySelector('#overlayTitle'),overlayText=document.querySelector('#overlayText'),startBtn=document.querySelector('#start');
+const W=960,H=540,months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+let state='ready',score=0,lives=3,monthIndex=0,ship={x:W/2,y:H-65,w:34,h:38,speed:6},shots=[],enemies=[],hazards=[],particles=[],stars=[],keys={},frame=0,lastShot=0;
+const rand=(a,b)=>a+Math.random()*(b-a);
+for(let i=0;i<110;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:rand(.5,2),speed:rand(.4,2),a:rand(.2,.9)});
+function reset(){score=0;lives=3;monthIndex=0;ship.x=W/2;shots=[];enemies=[];hazards=[];particles=[];frame=0;lastShot=0;for(let i=0;i<4;i++)spawnMonth();updateHud()}
+function spawnMonth(){if(monthIndex>=12)return;const x=rand(100,W-100);enemies.push({x,y:rand(-150,-40),w:74,h:34,month:months[monthIndex],idx:monthIndex,hp:1,phase:rand(0,6.2),speed:rand(.45,.85)+monthIndex*.025});monthIndex++;updateHud()}
+function updateHud(){scoreEl.textContent=String(score).padStart(4,'0');monthEl.textContent=months[Math.min(monthIndex,11)]||'DONE';livesEl.textContent='♥ '.repeat(lives).trim()||'—'}
+function burst(x,y,color,n=12){for(let i=0;i<n;i++)particles.push({x,y,vx:rand(-3,3),vy:rand(-3,3),life:rand(15,32),max:32,color,r:rand(1,3)})}
+function drawShip(){ctx.save();ctx.translate(ship.x,ship.y);ctx.shadowBlur=20;ctx.shadowColor='#67f7ff';ctx.fillStyle='#67f7ff';ctx.beginPath();ctx.moveTo(0,-22);ctx.lineTo(18,16);ctx.lineTo(0,9);ctx.lineTo(-18,16);ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#f8ffff';ctx.beginPath();ctx.moveTo(0,-11);ctx.lineTo(5,5);ctx.lineTo(-5,5);ctx.closePath();ctx.fill();ctx.fillStyle=frame%8<4?'#ff5ca8':'#ffd166';ctx.beginPath();ctx.moveTo(-6,16);ctx.lineTo(0,rand(24,32));ctx.lineTo(6,16);ctx.fill();ctx.restore()}
+function drawEnemy(e){ctx.save();ctx.translate(e.x,e.y);ctx.shadowBlur=16;ctx.shadowColor='#ff5ca8';ctx.fillStyle='#ff5ca8';ctx.beginPath();ctx.moveTo(-e.w/2,-e.h/2+4);ctx.lineTo(-e.w/2+12,-e.h/2-6);ctx.lineTo(e.w/2-12,-e.h/2-6);ctx.lineTo(e.w/2,e.h/2-4);ctx.lineTo(0,e.h/2+7);ctx.lineTo(-e.w/2,e.h/2-4);ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#170b25';ctx.fillRect(-e.w/2+9,-5,e.w-18,15);ctx.fillStyle='#fff';ctx.font='bold 14px ui-monospace,monospace';ctx.textAlign='center';ctx.fillText(e.month,0,6);ctx.restore()}
+function draw(){ctx.clearRect(0,0,W,H);const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#090f2b');bg.addColorStop(1,'#050815');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+stars.forEach(s=>{ctx.globalAlpha=s.a;ctx.fillStyle='#c9f9ff';ctx.fillRect(s.x,s.y,s.r,s.r);if(state==='playing'){s.y+=s.speed;if(s.y>H){s.y=0;s.x=Math.random()*W}}});ctx.globalAlpha=1;
+ctx.strokeStyle='#67f7ff12';ctx.lineWidth=1;for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+ctx.setLineDash([5,9]);ctx.strokeStyle='#67f7ff28';ctx.beginPath();ctx.moveTo(0,H-36);ctx.lineTo(W,H-36);ctx.stroke();ctx.setLineDash([]);
+enemies.forEach(drawEnemy);
+ctx.shadowBlur=12;ctx.shadowColor='#67f7ff';ctx.fillStyle='#b7ffff';shots.forEach(s=>{ctx.fillRect(s.x-2,s.y-10,4,15)});ctx.shadowBlur=0;
+hazards.forEach(h=>{ctx.save();ctx.translate(h.x,h.y);ctx.rotate(h.rot);ctx.fillStyle='#ffd166';ctx.shadowBlur=12;ctx.shadowColor='#ffd166';ctx.beginPath();ctx.moveTo(0,-h.r);ctx.lineTo(h.r*.8,0);ctx.lineTo(0,h.r);ctx.lineTo(-h.r*.8,0);ctx.closePath();ctx.fill();ctx.restore()});
+particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/p.max);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,p.r,p.r)});ctx.globalAlpha=1;
+if(state!=='over')drawShip();
+if(state==='playing'){ctx.fillStyle='#91a0c8';ctx.font='12px ui-monospace,monospace';ctx.fillText('SECTOR '+String(Math.min(monthIndex+1,12)).padStart(2,'0')+' / 12',18,25)}
+}
+function endGame(won){state=won?'won':'over';overlay.classList.remove('hidden');overlayTitle.textContent=won?'YEAR SAVED!':'MISSION FAILED';overlayText.textContent=won?'You cleared JAN through DEC. The year is safe — final score: '+score+'.':'Your ship was hit too many times. The year still needs a defender. Score: '+score+'.';startBtn.textContent=won?'PLAY AGAIN ↗':'RETRY MISSION ↗'}
+function update(){if(state==='playing'){frame++;
+if(keys.left)ship.x-=ship.speed;if(keys.right)ship.x+=ship.speed;ship.x=Math.max(28,Math.min(W-28,ship.x));
+if((keys.fire||keys.space)&&frame-lastShot>12){shots.push({x:ship.x,y:ship.y-22});lastShot=frame}
+if(frame%85===0&&monthIndex<12)spawnMonth();
+if(frame%48===0&&Math.random()<.75)hazards.push({x:rand(35,W-35),y:-15,r:rand(8,14),vy:rand(2,3.8),rot:0,vr:rand(-.08,.08)});
+shots.forEach(s=>s.y-=9);shots=shots.filter(s=>s.y>-20);
+enemies.forEach(e=>{e.y+=e.speed;e.x+=Math.sin(frame*.025+e.phase)*.9;if(e.y>H+50){e.y=rand(-100,-30);e.x=rand(70,W-70);lives--;burst(e.x,H-30,'#ff5ca8',18);updateHud();if(lives<=0)endGame(false)}});
+hazards.forEach(h=>{h.y+=h.vy;h.rot+=h.vr;if(Math.hypot(h.x-ship.x,h.y-ship.y)<h.r+15){h.y=H+40;lives--;burst(ship.x,ship.y,'#ff5ca8',18);updateHud();if(lives<=0)endGame(false)}});
+for(const s of shots){for(const e of enemies){if(!e.dead&&Math.abs(s.x-e.x)<e.w/2&&Math.abs(s.y-e.y)<e.h/2+8){e.dead=true;s.y=-30;score+=100+(e.idx*10);burst(e.x,e.y,'#67f7ff',18);if(e.idx===11){setTimeout(()=>{if(state==='playing')endGame(true)},350)}break}}}
+enemies=enemies.filter(e=>{if(e.dead)return false;if(e.idx===11&&e.y>H+20){setTimeout(()=>{if(state==='playing')endGame(true)},0);return false}return true});
+hazards=hazards.filter(h=>h.y<H+25);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.life--});particles=particles.filter(p=>p.life>0);updateHud();
+}draw();requestAnimationFrame(update)}
+startBtn.addEventListener('click',()=>{reset();state='playing';overlay.classList.add('hidden')});
+document.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight',' ','ArrowUp','ArrowDown'].includes(e.key))e.preventDefault();if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=true;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=true;if(e.key===' '||e.key==='ArrowUp')keys.space=true;if(e.key.toLowerCase()==='p'&&state==='playing'){state='paused';overlay.classList.remove('hidden');overlayTitle.textContent='PAUSED';overlayText.textContent='Take a breath, pilot. Resume the mission when ready.';startBtn.textContent='RESUME ↗';startBtn.onclick=()=>{startBtn.onclick=null;state='playing';overlay.classList.add('hidden')}}});
+document.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=false;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=false;if(e.key===' '||e.key==='ArrowUp')keys.space=false});
+document.querySelectorAll('[data-key]').forEach(btn=>{const key=btn.dataset.key;const down=e=>{e.preventDefault();keys[key==='fire'?'fire':key]=true};const up=e=>{e.preventDefault();keys[key==='fire'?'fire':key]=false};btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointerleave',up);btn.addEventListener('pointercancel',up)});
+reset();update();
+})();
+</script>
+</body>
+</html>
